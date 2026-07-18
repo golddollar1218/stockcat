@@ -1,5 +1,5 @@
 /* ============================================================
-   STOCKCAT — interactions, canvas charts, effects
+   STOCKCAT — interactions, canvas charts, feline effects
    ============================================================ */
 
 (function () {
@@ -33,7 +33,7 @@
   });
 
   /* ----------------------------------------------------------
-     Ticker tape
+     Ticker tape (with paw icons)
   ---------------------------------------------------------- */
   var tickerData = [
     ["STOCKCAT", "+420.69%", true],
@@ -50,11 +50,10 @@
 
   var track = document.getElementById("ticker-track");
   var tickerHTML = "";
-  // duplicated so the -50% translate loops seamlessly
   for (var r = 0; r < 2; r++) {
     tickerData.forEach(function (t) {
       tickerHTML +=
-        "<span>" +
+        '<span><i class="ticker-paw"></i>' +
         t[0] +
         ' <b class="' +
         (t[2] ? "up" : "down") +
@@ -64,6 +63,63 @@
     });
   }
   track.innerHTML = tickerHTML;
+
+  /* ----------------------------------------------------------
+     Ambient floating paws in background
+  ---------------------------------------------------------- */
+  (function ambientPaws() {
+    var field = document.getElementById("paw-field");
+    if (!field || prefersReducedMotion) return;
+    var count = window.innerWidth < 800 ? 8 : 14;
+    for (var i = 0; i < count; i++) {
+      var paw = document.createElement("span");
+      paw.className = "ambient-paw";
+      var size = 18 + Math.random() * 28;
+      paw.style.setProperty("--size", size + "px");
+      paw.style.setProperty("--dur", 14 + Math.random() * 16 + "s");
+      paw.style.setProperty("--delay", -Math.random() * 20 + "s");
+      paw.style.setProperty("--rot", Math.random() * 60 - 30 + "deg");
+      paw.style.setProperty("--op", (0.06 + Math.random() * 0.1).toFixed(2));
+      paw.style.left = Math.random() * 100 + "%";
+      field.appendChild(paw);
+    }
+  })();
+
+  /* ----------------------------------------------------------
+     Cursor paw trail
+  ---------------------------------------------------------- */
+  (function pawTrail() {
+    var trail = document.getElementById("paw-trail");
+    if (
+      !trail ||
+      prefersReducedMotion ||
+      !matchMedia("(pointer: fine)").matches
+    )
+      return;
+
+    var last = 0;
+    var toggle = false;
+    window.addEventListener(
+      "mousemove",
+      function (e) {
+        var now = performance.now();
+        if (now - last < 70) return;
+        last = now;
+        toggle = !toggle;
+
+        var paw = document.createElement("span");
+        paw.className = "trail-paw";
+        paw.style.left = e.clientX + (toggle ? -10 : 10) + "px";
+        paw.style.top = e.clientY + 6 + "px";
+        paw.style.setProperty("--r", (Math.random() * 40 - 20).toFixed(1) + "deg");
+        trail.appendChild(paw);
+        setTimeout(function () {
+          paw.remove();
+        }, 950);
+      },
+      { passive: true }
+    );
+  })();
 
   /* ----------------------------------------------------------
      Scroll reveal
@@ -172,7 +228,6 @@
 
     function nextCandle() {
       var open = price;
-      // upward drift — this is STOCKCAT after all
       var drift = (Math.random() - 0.38) * 0.0006;
       var close = Math.max(0.0005, open + drift);
       var high = Math.max(open, close) + Math.random() * 0.0003;
@@ -200,7 +255,13 @@
         return H - ((v - min) / (max - min)) * H;
       }
 
-      // horizontal grid lines
+      // subtle green wash under the chart
+      var grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, "rgba(0,200,5,0.04)");
+      grad.addColorStop(1, "rgba(0,200,5,0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
       ctx.strokeStyle = "rgba(255,255,255,0.05)";
       ctx.lineWidth = 1;
       for (var g = 1; g < 5; g++) {
@@ -212,6 +273,18 @@
 
       var slot = W / maxCandles;
       var bw = Math.max(3, slot * 0.55);
+
+      // trend line glow
+      ctx.beginPath();
+      candles.forEach(function (c, idx) {
+        var x = idx * slot + slot / 2;
+        var yy = y(c.c);
+        if (idx === 0) ctx.moveTo(x, yy);
+        else ctx.lineTo(x, yy);
+      });
+      ctx.strokeStyle = "rgba(53,230,92,0.25)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
       candles.forEach(function (c, idx) {
         var x = idx * slot + slot / 2;
@@ -281,7 +354,7 @@
         body: 14 + Math.random() * 46,
         wick: 8 + Math.random() * 22,
         up: up,
-        alpha: 0.05 + Math.random() * 0.1,
+        alpha: 0.04 + Math.random() * 0.08,
       };
     }
 
@@ -326,15 +399,42 @@
   })();
 
   /* ----------------------------------------------------------
-     Contract address copy
+     Paw burst helper
+  ---------------------------------------------------------- */
+  function spawnPawBurst(x, y) {
+    if (prefersReducedMotion) return;
+    var burst = document.getElementById("paw-burst");
+    if (!burst) return;
+    for (var i = 0; i < 10; i++) {
+      var paw = document.createElement("span");
+      paw.className = "burst-paw";
+      var angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.4;
+      var dist = 40 + Math.random() * 70;
+      paw.style.left = x + "px";
+      paw.style.top = y + "px";
+      paw.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+      paw.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+      paw.style.setProperty("--dr", Math.random() * 120 - 60 + "deg");
+      burst.appendChild(paw);
+      (function (el) {
+        setTimeout(function () {
+          el.remove();
+        }, 950);
+      })(paw);
+    }
+  }
+
+  /* ----------------------------------------------------------
+     Contract address copy + paw burst
   ---------------------------------------------------------- */
   var copyBtn = document.getElementById("copy-ca");
   var caEl = document.getElementById("contract-address");
-  copyBtn.addEventListener("click", function () {
+  copyBtn.addEventListener("click", function (e) {
     var text = caEl.textContent.trim();
     navigator.clipboard.writeText(text).then(function () {
       var original = copyBtn.textContent;
-      copyBtn.textContent = "COPIED";
+      copyBtn.textContent = "COPIED ✓";
+      spawnPawBurst(e.clientX, e.clientY);
       setTimeout(function () {
         copyBtn.textContent = original;
       }, 1600);
@@ -343,9 +443,8 @@
 
   /* ----------------------------------------------------------
      Dexscreener links: single place to update once pair is live.
-     Set PAIR_URL to e.g. "https://dexscreener.com/robinhood/0xcomingsoonethereum/0x..."
   ---------------------------------------------------------- */
-  var PAIR_URL = ""; // leave empty until the pair is live
+  var PAIR_URL = "";
 
   if (PAIR_URL) {
     ["hero-chart-link", "chart-outlink", "social-dex", "footer-dex"].forEach(
