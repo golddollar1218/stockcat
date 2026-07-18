@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STOCKCAT — Cats with cash, or cats with stocks?</title>
+    <meta
+      name="description"
+      content="STOCKCAT ($STOCKCAT) — the Robinhood memecoin. Cats with cash, or cats with stocks?"
+    />
+    <link rel="icon" type="image/webp" href="assets/logo.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- background layers -->
+    <canvas id="candle-bg" aria-hidden="true"></canvas>
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <div class="glow-orb orb-a" aria-hidden="true"></div>
+    <div class="glow-orb orb-b" aria-hidden="true"></div>
+    <div id="cursor-glow" aria-hidden="true"></div>
+
+    <!-- ================= NAV ================= -->
+    <header class="nav" id="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#hero">
+          <img src="assets/logo.webp" alt="STOCKCAT logo" class="brand-logo" />
+          <span class="brand-name">STOCK<em>CAT</em></span>
+        </a>
+        <nav class="nav-links" id="nav-links">
+          <a href="#about">About</a>
+          <a href="#howtobuy">How to Buy</a>
+          <a href="#chart">Chart</a>
+          <a href="#joinus">Join Us</a>
+        </nav>
+        <div class="nav-actions">
+          <a
+            class="btn btn-ghost btn-small"
+            href="https://x.com/StockCatMeme"
+            target="_blank"
+            rel="noopener"
+          >
+            <img src="assets/icons/x.svg" alt="X" class="btn-icon" />
+          </a>
+          <a
+            class="btn btn-primary btn-small"
+            href="https://app.uniswap.org/"
+            target="_blank"
+            rel="noopener"
+            >Buy $STOCKCAT</a
+          >
+        </div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="ticker-tape" aria-hidden="true">
+        <div class="ticker-track" id="ticker-track"></div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ================= HERO ================= -->
+      <section class="hero" id="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <div class="hero-badge reveal">
+              <span class="pulse-dot"></span> LIVE ON THE MARKET
+            </div>
+            <h1 class="hero-title">
+              <span class="line reveal d1"
+                >CATS WITH <span class="stroke">CASH,</span></span
+              >
+              <span class="line reveal d2">OR CATS WITH</span>
+              <span class="line reveal d3"
+                ><span class="green-glow">STOCKS?</span></span
+              >
+            </h1>
+            <p class="hero-sub reveal d4">
+              Meet <strong>STOCKCAT</strong> — the only trader on the floor with
+              four paws, nine lives, and zero stop-losses. He doesn't read
+              charts. He sits on them.
+            </p>
+            <div class="hero-cta reveal d5">
+              <a
+                class="btn btn-primary btn-big"
+                href="https://app.uniswap.org/"
+                target="_blank"
+                rel="noopener"
+              >
+                <img src="assets/icons/uniswap.svg" alt="" class="btn-icon" />
+                Buy on Uniswap
+              </a>
+              <a
+                class="btn btn-outline btn-big"
+                href="https://dexscreener.com/"
+                id="hero-chart-link"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="assets/icons/dexscreener.svg"
+                  alt=""
+                  class="btn-icon"
+                />
+                View Chart
+              </a>
+            </div>
+            <div class="hero-stats reveal d6">
+              <div class="stat">
+                <span class="stat-num" data-count="100" data-suffix="%">0</span>
+                <span class="stat-label">Community Owned</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-num" data-count="9" data-suffix="">0</span>
+                <span class="stat-label">Lives to Trade With</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-num" data-count="0" data-suffix="%">0</span>
+                <span class="stat-label">Taxes. Ever.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal d3">
+            <div class="cat-terminal" id="cat-terminal">
+              <div class="terminal-head">
+                <span class="term-dot red"></span>
+                <span class="term-dot yellow"></span>
+                <span class="term-dot green"></span>
+                <span class="term-title">STOCKCAT / USD</span>
+                <span class="term-price" id="term-price">$0.0000</span>
+              </div>
+              <canvas id="hero-chart" width="520" height="300"></canvas>
+              <img
+                src="assets/logo.webp"
+                alt="StockCat holding a phone with a green chart"
+                class="hero-cat float"
+              />
+              <div class="chip chip-1">+420.69%</div>
+              <div class="chip chip-2">MEOW CONFIRMED</div>
+              <div class="chip chip-3">BUY SIGNAL</div>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-hint" aria-hidden="true">
+          <span class="scroll-line"></span> SCROLL
+        </div>
+      </section>
+
+      <!-- ================= ABOUT ================= -->
+      <section class="about section" id="about">
+        <div class="section-inner">
+          <div class="section-tag reveal">// ABOUT</div>
+          <h2 class="section-title reveal">
+            THE CAT THAT <span class="green-glow">NEVER SELLS</span>
+          </h2>
+          <div class="about-grid">
+            <div class="about-card reveal tilt">
+              <div class="about-card-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 17l5-6 4 4 6-8 3 4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3>Born on the Trading Floor</h3>
+              <p>
+                While other cats chased lasers, STOCKCAT chased green candles.
+                Raised between two monitors and a mechanical keyboard, he
+                learned one thing: the chart only goes up if you purr hard
+                enough.
+              </p>
+            </div>
+            <div class="about-card reveal tilt">
+              <div class="about-card-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 2l2.4 6.9H21l-5.5 4.3 2.1 6.8-5.6-4.2-5.6 4.2 2.1-6.8L3 8.9h6.6L12 2z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3>Pure Meme. Zero Promises.</h3>
+              <p>
+                No roadmap-to-nowhere. No fake utility. $STOCKCAT is a memecoin
+                for the people who understand that a cat holding a phone with a
+                chart on it is, objectively, the peak of financial engineering.
+              </p>
+            </div>
+            <div class="about-card reveal tilt">
+              <div class="about-card-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M17 9V7a5 5 0 00-10 0v2M5 9h14l-1 11H6L5 9z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3>Diamond Paws</h3>
+              <p>
+                Liquidity locked, contract renounced, paws firmly on the buy
+                button. The community holds the bag — and the bag is full of
+                catnip and conviction.
+              </p>
+            </div>
+          </div>
+
+          <div class="token-strip reveal">
+            <div class="token-cell">
+              <span class="token-label">NAME</span>
+              <span class="token-value">STOCKCAT</span>
+            </div>
+            <div class="token-cell">
+              <span class="token-label">SYMBOL</span>
+              <span class="token-value">$STOCKCAT</span>
+            </div>
+            <div class="token-cell token-ca">
+              <span class="token-label">CONTRACT</span>
+              <span class="token-value mono" id="contract-address"
+                >TBA — STAY TUNED</span
+              >
+            </div>
+            <button class="btn btn-primary btn-small" id="copy-ca">COPY</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= HOW TO BUY ================= -->
+      <section class="howtobuy section" id="howtobuy">
+        <div class="section-inner">
+          <div class="section-tag reveal">// HOW TO BUY</div>
+          <h2 class="section-title reveal">
+            FOUR STEPS TO <span class="green-glow">CATHOOD</span>
+          </h2>
+          <div class="steps">
+            <div class="step reveal">
+              <div class="step-num">01</div>
+              <div class="step-body">
+                <h3>Get a Wallet</h3>
+                <p>
+                  Download MetaMask or your favorite wallet. Guard your seed
+                  phrase like a cat guards the warm spot on the couch.
+                </p>
+              </div>
+              <div class="step-glow"></div>
+            </div>
+            <div class="step reveal">
+              <div class="step-num">02</div>
+              <div class="step-body">
+                <h3>Load Up on ETH</h3>
+                <p>
+                  Buy ETH on any exchange and send it to your wallet. This is
+                  the tuna you'll trade for the cat.
+                </p>
+              </div>
+              <div class="step-glow"></div>
+            </div>
+            <div class="step reveal">
+              <div class="step-num">03</div>
+              <div class="step-body">
+                <h3>Swap on Uniswap</h3>
+                <p>
+                  Head to Uniswap, paste the $STOCKCAT contract address, and
+                  swap. Slow blinks recommended while the transaction confirms.
+                </p>
+              </div>
+              <div class="step-glow"></div>
+            </div>
+            <div class="step reveal">
+              <div class="step-num">04</div>
+              <div class="step-body">
+                <h3>Hold and Purr</h3>
+                <p>
+                  Welcome to the clowder. Add $STOCKCAT to your wallet, watch
+                  the candles, and never let the dog walkers shake you out.
+                </p>
+              </div>
+              <div class="step-glow"></div>
+            </div>
+          </div>
+          <div class="howtobuy-cta reveal">
+            <a
+              class="btn btn-primary btn-big"
+              href="https://app.uniswap.org/"
+              target="_blank"
+              rel="noopener"
+            >
+              <img src="assets/icons/uniswap.svg" alt="" class="btn-icon" />
+              Open Uniswap
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CHART ================= -->
+      <section class="chart section" id="chart">
+        <div class="section-inner">
+          <div class="section-tag reveal">// CHART</div>
+          <h2 class="section-title reveal">
+            WATCH THE <span class="green-glow">CANDLES</span> GROW CLAWS
+          </h2>
+          <div class="chart-frame reveal">
+            <div class="chart-frame-head">
+              <img
+                src="assets/icons/dexscreener.svg"
+                alt=""
+                class="chart-head-icon"
+              />
+              <span>DEXSCREENER — STOCKCAT LIVE</span>
+              <span class="chart-live"
+                ><span class="pulse-dot"></span> LIVE</span
+              >
+            </div>
+            <div class="chart-embed">
+              <iframe
+                id="dexscreener-embed"
+                src="https://dexscreener.com/ethereum?embed=1&theme=dark&trades=0&info=0"
+                title="STOCKCAT chart on Dexscreener"
+                loading="lazy"
+                allow="clipboard-write"
+              ></iframe>
+            </div>
+          </div>
+          <p class="chart-note reveal">
+            Chart loads directly from
+            <a
+              href="https://dexscreener.com/"
+              id="chart-outlink"
+              target="_blank"
+              rel="noopener"
+              >Dexscreener</a
+            >. Once $STOCKCAT is live, the pair appears here automatically.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= JOIN US ================= -->
+      <section class="joinus section" id="joinus">
+        <div class="section-inner">
+          <div class="section-tag reveal">// JOIN US</div>
+          <h2 class="section-title reveal">
+            THE CLOWDER IS <span class="green-glow">CALLING</span>
+          </h2>
+          <div class="joinus-banner reveal">
+            <img
+              src="assets/banner.png"
+              alt="STOCKCAT banner — cat holding a phone with a rising chart"
+            />
+            <div class="banner-shine"></div>
+          </div>
+          <p class="joinus-sub reveal">
+            Cash is temporary. Stocks are temporary. Cats are forever. Follow
+            the ticker, join the feed, and claim your seat on the trading desk.
+          </p>
+          <div class="social-row reveal">
+            <a
+              class="social-card"
+              href="https://x.com/StockCatMeme"
+              target="_blank"
+              rel="noopener"
+            >
+              <img src="assets/icons/x.svg" alt="X" />
+              <span class="social-name">X / TWITTER</span>
+              <span class="social-handle">@StockCatMeme</span>
+            </a>
+            <a
+              class="social-card"
+              href="https://dexscreener.com/"
+              id="social-dex"
+              target="_blank"
+              rel="noopener"
+            >
+              <img src="assets/icons/dexscreener.svg" alt="Dexscreener" />
+              <span class="social-name">DEXSCREENER</span>
+              <span class="social-handle">Live Chart</span>
+            </a>
+            <a
+              class="social-card"
+              href="https://app.uniswap.org/"
+              target="_blank"
+              rel="noopener"
+            >
+              <img src="assets/icons/uniswap.svg" alt="Uniswap" />
+              <span class="social-name">UNISWAP</span>
+              <span class="social-handle">Swap $STOCKCAT</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/logo.webp" alt="STOCKCAT logo" />
+          <span>STOCK<em>CAT</em></span>
+        </div>
+        <p class="footer-disclaimer">
+          $STOCKCAT is a memecoin with no intrinsic value and no expectation of
+          financial return. It exists purely for entertainment. Cats cannot give
+          financial advice. Do your own research.
+        </p>
+        <div class="footer-socials">
+          <a
+            href="https://x.com/StockCatMeme"
+            target="_blank"
+            rel="noopener"
+            aria-label="X"
+            ><img src="assets/icons/x.svg" alt="X"
+          /></a>
+          <a
+            href="https://dexscreener.com/"
+            id="footer-dex"
+            target="_blank"
+            rel="noopener"
+            aria-label="Dexscreener"
+            ><img src="assets/icons/dexscreener.svg" alt="Dexscreener"
+          /></a>
+          <a
+            href="https://app.uniswap.org/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Uniswap"
+            ><img src="assets/icons/uniswap.svg" alt="Uniswap"
+          /></a>
+        </div>
+        <p class="footer-copy">© 2026 STOCKCAT. All paws reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
