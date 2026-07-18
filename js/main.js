@@ -343,7 +343,7 @@
 
   /* ----------------------------------------------------------
      Dexscreener links: single place to update once pair is live.
-     Set PAIR_URL to e.g. "https://dexscreener.com/ethereum/0x..."
+     Set PAIR_URL to e.g. "https://dexscreener.com/robinhood/0xcomingsoonethereum/0x..."
   ---------------------------------------------------------- */
   var PAIR_URL = ""; // leave empty until the pair is live
 
